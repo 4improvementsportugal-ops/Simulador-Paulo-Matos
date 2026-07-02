@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Simulador de Troca de Casa — Paulo Matos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init','PLACEHOLDER_PIXEL_ID');
+    fbq('track','PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=PLACEHOLDER_PIXEL_ID&ev=PageView&noscript=1" aria-hidden="true"/></noscript>
+  <!-- End Meta Pixel Code -->
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────── */
+    :root {
+      --c-main:    #8e8172;
+      --c-accent:  #b89b6a;
+      --c-bg:      #fefdfd;
+      --c-dark:    #2b2622;
+      --c-mid:     #6b5f58;
+      --c-light:   #a09186;
+      --c-white:   #ffffff;
+      --c-surface: #f7f4f0;
+      --c-error:   #b94040;
+      --c-border:  rgba(142,129,114,0.15);
+      --r-sm:      10px;
+      --r-md:      14px;
+      --r-pill:    100px;
+      --ease:      cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--c-bg);
+      color: var(--c-dark);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    .hero {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background:
+        linear-gradient(108deg,
+          rgba(43,38,34,0.92) 0%,
+          rgba(43,38,34,0.74) 40%,
+          rgba(43,38,34,0.36) 68%,
+          rgba(43,38,34,0.10) 100%),
+        url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1400&q=85')
+        center / cover no-repeat;
+      position: relative;
+    }
+
+    /* Nav */
+    .hero-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 52px;
+    }
+
+    .hero-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--c-white);
+      letter-spacing: 0.07em;
+      text-decoration: none;
+    }
+
+    /* Content */
+    .hero-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 40px 52px 72px;
+      max-width: 820px;
+    }
+
+    .hero-inner { width: 100%; }
+
+    .hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 18px;
+      background: rgba(184,155,106,0.18);
+      border: 1px solid rgba(184,155,106,0.38);
+      border-radius: var(--r-pill);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--c-accent);
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+      font-weight: 600;
+      line-height: 1.14;
+      color: var(--c-white);
+      margin-bottom: 22px;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--c-accent);
+    }
+
+    .hero-sub {
+      font-size: clamp(0.95rem, 1.8vw, 1.08rem);
+      font-weight: 300;
+      line-height: 1.74;
+      color: rgba(255,255,255,0.72);
+      max-width: 500px;
+      margin-bottom: 40px;
+    }
+
+    .btn-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      padding: 17px 42px;
+      background: var(--c-accent);
+      color: var(--c-white);
+      border: none;
+      border-radius: var(--r-pill);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(184,155,106,0.45);
+      transition: background 0.22s var(--ease), transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
+      text-transform: none;
+    }
+
+    .btn-hero:hover {
+      background: #c9aa7c;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 36px rgba(184,155,106,0.55);
+    }
+
+    .btn-hero svg { transition: transform 0.22s var(--ease); }
+    .btn-hero:hover svg { transform: translateX(4px); }
+
+    /* Estatísticas */
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-top: 52px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      padding-top: 36px;
+      max-width: 480px;
+    }
+
+    .stat-item {
+      flex: 1;
+      padding-right: 24px;
+    }
+
+    .stat-item:not(:last-child) {
+      border-right: 1px solid rgba(255,255,255,0.14);
+      margin-right: 24px;
+    }
+
+    .stat-num {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--c-accent);
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .stat-lbl {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.58);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .hero-nav  { padding: 22px 24px; }
+      .hero-content { padding: 32px 24px 56px; }
+      .hero {
+        background:
+          linear-gradient(to bottom,
+            rgba(43,38,34,0.82) 0%,
+            rgba(43,38,34,0.88) 100%),
+          url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=900&q=85')
+          center / cover no-repeat;
+      }
+      .hero-stats { max-width: 100%; }
+      .stat-num { font-size: 1.7rem; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       QUIZ SECTION
+    ══════════════════════════════════════════ */
+    #sec-quiz { display: none; background: var(--c-bg); min-height: 100dvh; }
+
+    /* Topbar sticky */
+    .quiz-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--c-white);
+      border-bottom: 1px solid var(--c-border);
+      padding: 16px 24px;
+    }
+
+    .quiz-topbar-inner { max-width: 640px; margin: 0 auto; }
+
+    .prog-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .prog-step {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--c-accent);
+    }
+
+    .prog-pct { font-size: 11px; color: var(--c-light); }
+
+    .prog-track {
+      height: 3px;
+      background: rgba(142,129,114,0.12);
+      border-radius: var(--r-pill);
+      overflow: hidden;
+    }
+
+    .prog-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--c-main), var(--c-accent));
+      border-radius: var(--r-pill);
+      transition: width 0.5s var(--ease);
+      will-change: width;
+    }
+
+    /* Quiz body */
+    .quiz-body {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 44px 24px 96px;
+    }
+
+    /* Steps */
+    .step { display: none; }
+    .step.active {
+      display: block;
+      animation: fadeUp 0.36s var(--ease) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cabeçalho do passo */
+    .step-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--c-accent);
+      margin-bottom: 10px;
+    }
+
+    .step-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 600;
+      color: var(--c-dark);
+      line-height: 1.22;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      font-size: 13.5px;
+      color: var(--c-light);
+      margin-bottom: 36px;
+      font-weight: 400;
+    }
+
+    /* ── OPÇÕES ──────────────────────────────── */
+    .ops-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--c-mid);
+      margin-bottom: 10px;
+    }
+
+    .ops-req { color: var(--c-error); }
+
+    .ops-grid   { display: grid; gap: 10px; margin-bottom: 6px; }
+    .ops-2      { grid-template-columns: 1fr 1fr; }
+    .ops-3      { grid-template-columns: repeat(3, 1fr); }
+    .ops-4      { grid-template-columns: repeat(4, 1fr); }
+
+    @media (max-width: 460px) {
+      .ops-4 { grid-template-columns: repeat(2, 1fr); }
+      .ops-3 { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 360px) {
+      .ops-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    .op {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 18px 10px;
+      background: var(--c-white);
+      border: 1.5px solid var(--c-border);
+      border-radius: var(--r-md);
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--c-dark);
+      text-align: center;
+      min-height: 72px;
+      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .op:hover { border-color: rgba(184,155,106,0.50); background: rgba(184,155,106,0.04); }
+
+    .op.sel {
+      border-color: var(--c-accent);
+      background: rgba(184,155,106,0.08);
+      box-shadow: 0 0 0 3px rgba(184,155,106,0.16);
+      color: var(--c-dark);
+    }
+
+    .op-icon { font-size: 22px; line-height: 1; }
+
+    /* ── CAMPOS ──────────────────────────────── */
+    .campo-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--c-mid);
+      margin-bottom: 8px;
+    }
+
+    .campo-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--c-white);
+      border: 1.5px solid var(--c-border);
+      border-radius: var(--r-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--c-dark);
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .campo-input::placeholder { color: rgba(160,145,134,0.60); }
+
+    .campo-input:focus {
+      border-color: var(--c-accent);
+      box-shadow: 0 0 0 3px rgba(184,155,106,0.14);
+    }
+
+    .campo-input.err {
+      border-color: var(--c-error);
+      box-shadow: 0 0 0 3px rgba(185,64,64,0.09);
+    }
+
+    select.campo-input {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Cpath d='M1 1l7 7 7-7' stroke='%238e8172' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 11px;
+      padding-right: 38px;
+    }
+
+    /* Erros */
+    .err-msg {
+      display: none;
+      font-size: 11.5px;
+      color: var(--c-error);
+      font-weight: 500;
+      margin-top: 6px;
+    }
+    .err-msg.vis { display: block; }
+
+    /* Grupos e separadores */
+    .grupo   { margin-bottom: 28px; }
+    .sep-luz { height: 1px; background: var(--c-border); margin: 24px 0; }
+
+    /* Condicional */
+    .cond {
+      overflow: hidden;
+      transition: max-height 0.36s var(--ease), opacity 0.36s var(--ease), margin-bottom 0.36s var(--ease);
+    }
+    .cond.hide { max-height: 0 !important; opacity: 0; pointer-events: none; margin-bottom: 0; }
+
+    /* ── NAVEGAÇÃO ───────────────────────────── */
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-top: 36px;
+    }
+
+    .btn-back {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 14px 22px;
+      background: transparent;
+      border: 1.5px solid var(--c-border);
+      border-radius: var(--r-pill);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--c-mid);
+      cursor: pointer;
+      transition: border-color 0.18s, color 0.18s;
+      white-space: nowrap;
+    }
+    .btn-back:hover { border-color: var(--c-main); color: var(--c-main); }
+
+    .btn-next {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 28px;
+      background: var(--c-accent);
+      color: var(--c-white);
+      border: none;
+      border-radius: var(--r-pill);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 22px rgba(184,155,106,0.32);
+      transition: background 0.18s, transform 0.18s var(--ease), box-shadow 0.18s, opacity 0.18s;
+    }
+    .btn-next:hover:not(:disabled) {
+      background: #c9aa7c;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(184,155,106,0.42);
+    }
+    .btn-next:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-spin {
+      width: 17px; height: 17px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      display: none;
+    }
+    .btn-next.loading .btn-lbl  { display: none; }
+    .btn-next.loading .btn-arr  { display: none; }
+    .btn-next.loading .btn-spin { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Rodapé do passo */
+    .passo-footer {
+      margin-top: 20px;
+      font-size: 11.5px;
+      color: var(--c-light);
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .nav { flex-direction: column-reverse; }
+      .btn-back { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
+<section class="hero" id="sec-hero" aria-label="Simulador de Troca de Casa">
+
+  <nav class="hero-nav">
+    <span class="hero-brand">Paulo Matos</span>
+  </nav>
+
+  <div class="hero-content">
+    <div class="hero-inner">
+
+      <div class="hero-chip" aria-hidden="true">Simulador de Troca de Casa</div>
+
+      <h1 class="hero-title">
+        A sua próxima casa <em>já existe.</em><br>
+        Falta perceber se está pronto<br>
+        para avançar.
+      </h1>
+
+      <p class="hero-sub">
+        Responda a 5 perguntas e descubra, em menos de 3 minutos, se a troca de casa é viável para si e o que precisa de fazer para avançar com confiança.
+      </p>
+
+      <button class="btn-hero" onclick="iniciarQuiz()" aria-label="Iniciar simulador">
+        Começar o simulador
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+
+      <div class="hero-stats" role="list" aria-label="Características do simulador">
+        <div class="stat-item" role="listitem">
+          <span class="stat-num">5</span>
+          <span class="stat-lbl">Perguntas</span>
+        </div>
+        <div class="stat-item" role="listitem">
+          <span class="stat-num">3 min</span>
+          <span class="stat-lbl">Sem demoras</span>
+        </div>
+        <div class="stat-item" role="listitem">
+          <span class="stat-num">100%</span>
+          <span class="stat-lbl">Gratuito</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     QUIZ
+═══════════════════════════════════════════ -->
+<section id="sec-quiz" aria-label="Questionário">
+
+  <!-- Barra de progresso sticky -->
+  <div class="quiz-topbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="topbar">
+    <div class="quiz-topbar-inner">
+      <div class="prog-meta">
+        <span class="prog-step" id="lbl-passo">Passo 1 de 5</span>
+        <span class="prog-pct"  id="lbl-pct">20%</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-bar" id="prog-bar" style="width:20%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body">
+
+    <!-- ══════ PASSO 1 — O que procura? ══════ -->
+    <div class="step active" id="step-1">
+      <p class="step-eyebrow">O imóvel que procura</p>
+      <h2 class="step-title">O que procura?</h2>
+      <p class="step-desc">Diga-nos um pouco sobre o imóvel que tem em mente.</p>
+
+      <div class="grupo">
+        <span class="ops-label">Tipo de imóvel <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-2" role="group" aria-label="Tipo de imóvel pretendido">
+          <div class="op" role="button" tabindex="0"
+               onclick="sel('tipo_procura','Apartamento',this)"
+               onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">🏢</span>Apartamento
+          </div>
+          <div class="op" role="button" tabindex="0"
+               onclick="sel('tipo_procura','Moradia',this)"
+               onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">🏠</span>Moradia
+          </div>
+        </div>
+        <p class="err-msg" id="e-tipo_procura">Selecione o tipo de imóvel.</p>
+      </div>
+
+      <div class="grupo">
+        <span class="ops-label">Tipologia pretendida <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-4" role="group" aria-label="Tipologia pretendida">
+          <div class="op" role="button" tabindex="0" onclick="sel('tipologia_procura','T1',this)" onkeydown="opKey(event,this)">T1</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('tipologia_procura','T2',this)" onkeydown="opKey(event,this)">T2</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('tipologia_procura','T3',this)" onkeydown="opKey(event,this)">T3</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('tipologia_procura','T4+',this)" onkeydown="opKey(event,this)">T4+</div>
+        </div>
+        <p class="err-msg" id="e-tipologia_procura">Selecione a tipologia pretendida.</p>
+      </div>
+
+      <div class="grupo">
+        <label class="campo-label" for="f-local">Localização pretendida <span class="ops-req" aria-hidden="true">*</span></label>
+        <input class="campo-input" type="text" id="f-local"
+               placeholder="Ex: Lisboa, Porto, Cascais"
+               autocomplete="off"
+               oninput="A.localizacao=this.value.trim()">
+        <p class="err-msg" id="e-localizacao">Indique a localização pretendida.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-next" onclick="avancar(1)">
+          <span class="btn-lbl">Continuar</span>
+          <div class="btn-spin" aria-hidden="true"></div>
+          <svg class="btn-arr" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ══════ PASSO 2 — O que precisa de vender? ══════ -->
+    <div class="step" id="step-2">
+      <p class="step-eyebrow">O imóvel que tem</p>
+      <h2 class="step-title">O que precisa de vender?</h2>
+      <p class="step-desc">Ajude-nos a perceber a sua situação actual.</p>
+
+      <div class="grupo">
+        <span class="ops-label">Tipo de imóvel a vender <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-3" role="group" aria-label="Tipo de imóvel a vender">
+          <div class="op" role="button" tabindex="0" onclick="selVender('Apartamento',this)" onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">🏢</span>Apartamento
+          </div>
+          <div class="op" role="button" tabindex="0" onclick="selVender('Moradia',this)" onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">🏠</span>Moradia
+          </div>
+          <div class="op" role="button" tabindex="0" onclick="selVender('Terreno',this)" onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">🌿</span>Terreno
+          </div>
+        </div>
+        <p class="err-msg" id="e-tipo_vender">Selecione uma opção.</p>
+      </div>
+
+      <!-- Tipologia actual — oculta se Terreno -->
+      <div class="grupo cond" id="g-tipologia_atual" style="max-height:160px; opacity:1; margin-bottom:28px">
+        <span class="ops-label">Tipologia actual <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-4" role="group" aria-label="Tipologia actual">
+          <div class="op" role="button" tabindex="0" onclick="sel('tipologia_atual','T1',this)" onkeydown="opKey(event,this)">T1</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('tipologia_atual','T2',this)" onkeydown="opKey(event,this)">T2</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('tipologia_atual','T3',this)" onkeydown="opKey(event,this)">T3</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('tipologia_atual','T4+',this)" onkeydown="opKey(event,this)">T4+</div>
+        </div>
+        <p class="err-msg" id="e-tipologia_atual">Selecione a tipologia actual.</p>
+      </div>
+
+      <div class="grupo">
+        <label class="campo-label" for="f-estado">Estado do imóvel <span class="ops-req" aria-hidden="true">*</span></label>
+        <select class="campo-input" id="f-estado" onchange="A.estado_imovel=this.value">
+          <option value="">Selecione</option>
+          <option value="Novo ou recuperado">Novo ou recuperado</option>
+          <option value="Usado em bom estado">Usado em bom estado</option>
+          <option value="Precisa de obras">Precisa de obras</option>
+        </select>
+        <p class="err-msg" id="e-estado_imovel">Selecione o estado do imóvel.</p>
+      </div>
+
+      <div class="grupo">
+        <label class="campo-label" for="f-zona">Zona do imóvel actual <span class="ops-req" aria-hidden="true">*</span></label>
+        <input class="campo-input" type="text" id="f-zona"
+               placeholder="Ex: Lisboa, Braga, Setúbal"
+               autocomplete="off"
+               oninput="A.zona_atual=this.value.trim()">
+        <p class="err-msg" id="e-zona_atual">Indique a zona do seu imóvel.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-back" onclick="voltar(2)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Voltar
+        </button>
+        <button class="btn-next" onclick="avancar(2)">
+          <span class="btn-lbl">Continuar</span>
+          <div class="btn-spin" aria-hidden="true"></div>
+          <svg class="btn-arr" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ══════ PASSO 3 — Margem de manobra ══════ -->
+    <div class="step" id="step-3">
+      <p class="step-eyebrow">Situação financeira</p>
+      <h2 class="step-title">A sua margem de manobra</h2>
+      <p class="step-desc">Estas informações ajudam-nos a calcular a viabilidade real da troca.</p>
+
+      <div class="grupo">
+        <span class="ops-label">Tem crédito habitação activo? <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-2" role="group" aria-label="Crédito habitação">
+          <div class="op" role="button" tabindex="0" onclick="selCredito('Sim',this)" onkeydown="opKey(event,this)">Sim</div>
+          <div class="op" role="button" tabindex="0" onclick="selCredito('Não',this)" onkeydown="opKey(event,this)">Não, imóvel pago</div>
+        </div>
+        <p class="err-msg" id="e-credito">Selecione uma opção.</p>
+      </div>
+
+      <!-- Capital em dívida — visível só se Sim -->
+      <div class="grupo cond hide" id="g-capital_divida" style="max-height:120px; opacity:0; margin-bottom:0">
+        <label class="campo-label" for="f-divida">Capital em dívida <span class="ops-req" aria-hidden="true">*</span></label>
+        <select class="campo-input" id="f-divida" onchange="A.capital_divida=this.value">
+          <option value="">Selecione</option>
+          <option value="Menos de 50k">Menos de 50 000 euros</option>
+          <option value="50 a 100k">50 000 a 100 000 euros</option>
+          <option value="100 a 200k">100 000 a 200 000 euros</option>
+          <option value="Mais de 200k">Mais de 200 000 euros</option>
+        </select>
+        <p class="err-msg" id="e-capital_divida">Selecione o capital em dívida.</p>
+      </div>
+
+      <div class="grupo">
+        <span class="ops-label">Capitais próprios disponíveis <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-2" role="group" aria-label="Capitais próprios">
+          <div class="op" role="button" tabindex="0" onclick="sel('capitais_proprios','Nenhum',this)" onkeydown="opKey(event,this)">Nenhum</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('capitais_proprios','Até 20k',this)" onkeydown="opKey(event,this)">Até 20 000 euros</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('capitais_proprios','20 a 60k',this)" onkeydown="opKey(event,this)">20 000 a 60 000 euros</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('capitais_proprios','Mais de 60k',this)" onkeydown="opKey(event,this)">Mais de 60 000 euros</div>
+        </div>
+        <p class="err-msg" id="e-capitais_proprios">Selecione os capitais próprios disponíveis.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-back" onclick="voltar(3)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Voltar
+        </button>
+        <button class="btn-next" onclick="avancar(3)">
+          <span class="btn-lbl">Continuar</span>
+          <div class="btn-spin" aria-hidden="true"></div>
+          <svg class="btn-arr" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ══════ PASSO 4 — Prazo e motivação ══════ -->
+    <div class="step" id="step-4">
+      <p class="step-eyebrow">Timing e motivação</p>
+      <h2 class="step-title">Em quanto tempo quer concretizar?</h2>
+      <p class="step-desc">O prazo ajuda-nos a definir a estratégia mais adequada para si.</p>
+
+      <div class="grupo">
+        <span class="ops-label">Prazo pretendido <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-2" role="group" aria-label="Prazo">
+          <div class="op" role="button" tabindex="0" onclick="sel('prazo','O mais rápido possível',this)" onkeydown="opKey(event,this)">O mais rápido possível</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('prazo','Menos de 3 meses',this)" onkeydown="opKey(event,this)">Menos de 3 meses</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('prazo','3 a 6 meses',this)" onkeydown="opKey(event,this)">3 a 6 meses</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('prazo','Mais de 6 meses',this)" onkeydown="opKey(event,this)">Mais de 6 meses</div>
+        </div>
+        <p class="err-msg" id="e-prazo">Selecione o prazo pretendido.</p>
+      </div>
+
+      <div class="grupo">
+        <span class="ops-label">Principal motivo da troca <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-2" role="group" aria-label="Motivo da troca">
+          <div class="op" role="button" tabindex="0" onclick="sel('motivo','Família e mais espaço',this)" onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">👨‍👩‍👧‍👦</span>Família e mais espaço
+          </div>
+          <div class="op" role="button" tabindex="0" onclick="sel('motivo','Mudança de zona',this)" onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">📍</span>Mudança de zona
+          </div>
+          <div class="op" role="button" tabindex="0" onclick="sel('motivo','Upgrade de qualidade de vida',this)" onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">✨</span>Upgrade de qualidade de vida
+          </div>
+          <div class="op" role="button" tabindex="0" onclick="sel('motivo','Razões financeiras',this)" onkeydown="opKey(event,this)">
+            <span class="op-icon" aria-hidden="true">💶</span>Razões financeiras
+          </div>
+          <div class="op" role="button" tabindex="0" onclick="sel('motivo','Outro',this)" onkeydown="opKey(event,this)" style="grid-column:1/-1">
+            Outro
+          </div>
+        </div>
+        <p class="err-msg" id="e-motivo">Selecione o principal motivo da troca.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-back" onclick="voltar(4)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Voltar
+        </button>
+        <button class="btn-next" onclick="avancar(4)">
+          <span class="btn-lbl">Continuar</span>
+          <div class="btn-spin" aria-hidden="true"></div>
+          <svg class="btn-arr" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ══════ PASSO 5 — Contacto ══════ -->
+    <div class="step" id="step-5">
+      <p class="step-eyebrow">Quase lá</p>
+      <h2 class="step-title">Como podemos contactá-lo?</h2>
+      <p class="step-desc">O seu resultado está pronto. Só precisamos dos seus contactos para o apresentar.</p>
+
+      <div class="grupo">
+        <label class="campo-label" for="f-nome">Nome completo <span class="ops-req" aria-hidden="true">*</span></label>
+        <input class="campo-input" type="text" id="f-nome"
+               placeholder="O seu nome completo"
+               autocomplete="name"
+               oninput="A.nome=this.value">
+        <p class="err-msg" id="e-nome">Indique o seu nome completo.</p>
+      </div>
+
+      <div class="grupo">
+        <label class="campo-label" for="f-tel">Telemóvel <span class="ops-req" aria-hidden="true">*</span></label>
+        <input class="campo-input" type="tel" id="f-tel"
+               placeholder="912 345 678"
+               autocomplete="tel"
+               oninput="A.tel=this.value">
+        <p class="err-msg" id="e-tel">Indique um número válido com pelo menos 9 dígitos.</p>
+      </div>
+
+      <div class="grupo">
+        <label class="campo-label" for="f-email">Endereço de e-mail <span class="ops-req" aria-hidden="true">*</span></label>
+        <input class="campo-input" type="email" id="f-email"
+               placeholder="o.seu@email.pt"
+               autocomplete="email"
+               oninput="A.email=this.value">
+        <p class="err-msg" id="e-email">Indique um endereço de e-mail válido.</p>
+      </div>
+
+      <div class="sep-luz" role="separator"></div>
+
+      <div class="grupo">
+        <span class="ops-label">Avaliação gratuita em 48h. Tem interesse? <span class="ops-req" aria-hidden="true">*</span></span>
+        <div class="ops-grid ops-2" role="group" aria-label="Interesse em avaliação gratuita">
+          <div class="op" role="button" tabindex="0" onclick="sel('avaliacao_gratis','Sim',this)" onkeydown="opKey(event,this)">Sim, tenho interesse</div>
+          <div class="op" role="button" tabindex="0" onclick="sel('avaliacao_gratis','Não',this)" onkeydown="opKey(event,this)">Não, obrigado</div>
+        </div>
+        <p class="err-msg" id="e-avaliacao_gratis">Selecione uma opção.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-back" onclick="voltar(5)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Voltar
+        </button>
+        <button class="btn-next" id="btn-submit" onclick="finalizar()">
+          <span class="btn-lbl">Ver resultado</span>
+          <div class="btn-spin" aria-hidden="true"></div>
+        </button>
+      </div>
+
+      <p class="passo-footer">🔒 Os seus dados são confidenciais e nunca serão partilhados com terceiros.</p>
+    </div>
+
+  </div><!-- /quiz-body -->
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════ -->
+<script>
+  /* ── Constantes ─────────────────────────── */
+  const CHAVE       = 'sim_paulmatos';
+  const WEBHOOK_URL = 'PLACEHOLDER_WEBHOOK_URL';
+  const PIXEL_ID    = 'PLACEHOLDER_PIXEL_ID';
+  const PREFIXO     = '351';
+  const NOME_ORIGEM = 'Paulo Matos — Simulador Troca de Casa';
+  const WA_NUM      = '351919783014';
+  const TEL         = '+351919783014';
+  const TOTAL       = 5;
+
+  /* ── Estado ─────────────────────────────── */
+  let A = {
+    tipo_procura:'', tipologia_procura:'', localizacao:'',
+    tipo_vender:'', tipologia_atual:'', estado_imovel:'', zona_atual:'',
+    credito:'', capital_divida:'', capitais_proprios:'',
+    prazo:'', motivo:'',
+    nome:'', tel:'', email:'', avaliacao_gratis:''
+  };
+  let passoAtual = 1;
+
+  /* ── Iniciar quiz ───────────────────────── */
+  function iniciarQuiz() {
+    document.getElementById('sec-hero').style.display = 'none';
+    document.getElementById('sec-quiz').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    atualizarProg(1);
+  }
+
+  /* ── Progresso ──────────────────────────── */
+  function atualizarProg(p) {
+    const pct = Math.round((p / TOTAL) * 100);
+    document.getElementById('prog-bar').style.width  = pct + '%';
+    document.getElementById('lbl-passo').textContent = 'Passo ' + p + ' de ' + TOTAL;
+    document.getElementById('lbl-pct').textContent   = pct + '%';
+    const tb = document.getElementById('topbar');
+    if (tb) tb.setAttribute('aria-valuenow', pct);
+  }
+
+  /* ── Mostrar passo ──────────────────────── */
+  function mostrarPasso(p) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + p).classList.add('active');
+    atualizarProg(p);
+    const offset = (document.getElementById('topbar') || {}).offsetHeight || 0;
+    window.scrollTo({ top: document.getElementById('sec-quiz').offsetTop - offset, behavior: 'smooth' });
+  }
+
+  function avancar(p) { if (!validar(p)) return; passoAtual = p + 1; mostrarPasso(passoAtual); }
+  function voltar(p)  { if (p <= 1) return; passoAtual = p - 1; mostrarPasso(passoAtual); }
+
+  /* ── Selecção de opções ─────────────────── */
+  function sel(campo, valor, el) {
+    A[campo] = valor;
+    const grp = el.closest('.ops-grid');
+    if (grp) grp.querySelectorAll('.op').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+    const e = document.getElementById('e-' + campo);
+    if (e) e.classList.remove('vis');
+  }
+
+  function opKey(e, el) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+  }
+
+  /* Passo 2 — tipo a vender */
+  function selVender(valor, el) {
+    A.tipo_vender = valor;
+    const grp = el.closest('.ops-grid');
+    if (grp) grp.querySelectorAll('.op').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+    const e = document.getElementById('e-tipo_vender');
+    if (e) e.classList.remove('vis');
+
+    /* Tipologia actual — oculta apenas se Terreno */
+    const eTerr = (valor === 'Terreno');
+    cond('g-tipologia_atual', !eTerr);
+    if (eTerr) {
+      A.tipologia_atual = '';
+      document.querySelectorAll('#g-tipologia_atual .op').forEach(o => o.classList.remove('sel'));
+    }
+  }
+
+  /* Passo 3 — crédito */
+  function selCredito(valor, el) {
+    A.credito = valor;
+    const grp = el.closest('.ops-grid');
+    if (grp) grp.querySelectorAll('.op').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+    const e = document.getElementById('e-credito');
+    if (e) e.classList.remove('vis');
+
+    const temCred = (valor === 'Sim');
+    cond('g-capital_divida', temCred);
+    if (!temCred) {
+      A.capital_divida = '';
+      document.getElementById('f-divida').value = '';
+    }
+  }
+
+  /* Mostrar / ocultar elemento condicional */
+  function cond(id, mostrar) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (mostrar) {
+      el.classList.remove('hide');
+      el.style.maxHeight    = '300px';
+      el.style.opacity      = '1';
+      el.style.marginBottom = '28px';
+    } else {
+      el.classList.add('hide');
+      el.style.maxHeight    = '0';
+      el.style.opacity      = '0';
+      el.style.marginBottom = '0';
+    }
+  }
+
+  /* ── Validação ──────────────────────────── */
+  function validar(p) {
+    let ok = true;
+
+    function ev(id, inputId) {
+      const m = document.getElementById(id); if (m) m.classList.add('vis');
+      if (inputId) { const i = document.getElementById(inputId); if (i) i.classList.add('err'); }
+      ok = false;
+    }
+    function cl(id, inputId) {
+      const m = document.getElementById(id); if (m) m.classList.remove('vis');
+      if (inputId) { const i = document.getElementById(inputId); if (i) i.classList.remove('err'); }
+    }
+
+    if (p === 1) {
+      A.tipo_procura      ? cl('e-tipo_procura')      : ev('e-tipo_procura');
+      A.tipologia_procura ? cl('e-tipologia_procura') : ev('e-tipologia_procura');
+      A.localizacao       ? cl('e-localizacao','f-local') : ev('e-localizacao','f-local');
+    }
+
+    if (p === 2) {
+      A.tipo_vender ? cl('e-tipo_vender') : ev('e-tipo_vender');
+      if (A.tipo_vender !== 'Terreno') {
+        A.tipologia_atual ? cl('e-tipologia_atual') : ev('e-tipologia_atual');
+      } else {
+        cl('e-tipologia_atual');
+      }
+      A.estado_imovel ? cl('e-estado_imovel','f-estado') : ev('e-estado_imovel','f-estado');
+      A.zona_atual    ? cl('e-zona_atual','f-zona')       : ev('e-zona_atual','f-zona');
+    }
+
+    if (p === 3) {
+      A.credito ? cl('e-credito') : ev('e-credito');
+      if (A.credito === 'Sim') {
+        A.capital_divida ? cl('e-capital_divida','f-divida') : ev('e-capital_divida','f-divida');
+      } else {
+        cl('e-capital_divida','f-divida');
+      }
+      A.capitais_proprios ? cl('e-capitais_proprios') : ev('e-capitais_proprios');
+    }
+
+    if (p === 4) {
+      A.prazo  ? cl('e-prazo')  : ev('e-prazo');
+      A.motivo ? cl('e-motivo') : ev('e-motivo');
+    }
+
+    if (p === 5) {
+      A.nome && A.nome.trim()
+        ? cl('e-nome','f-nome') : ev('e-nome','f-nome');
+      /\d{9,}/.test((A.tel || '').replace(/\D/g,''))
+        ? cl('e-tel','f-tel') : ev('e-tel','f-tel');
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(A.email || '')
+        ? cl('e-email','f-email') : ev('e-email','f-email');
+      A.avaliacao_gratis ? cl('e-avaliacao_gratis') : ev('e-avaliacao_gratis');
+    }
+
+    return ok;
+  }
+
+  /* ── Score ──────────────────────────────── */
+  function calcularScore() {
+    let s = 5;
+    if      (A.capitais_proprios === 'Nenhum')     s -= 1;
+    else if (A.capitais_proprios === '20 a 60k')   s += 1;
+    else if (A.capitais_proprios === 'Mais de 60k') s += 2;
+    if  (A.credito === 'Não')                      s += 1;
+    if      (A.prazo === 'O mais rápido possível') s -= 1;
+    else if (A.prazo === '3 a 6 meses')            s += 1;
+    else if (A.prazo === 'Mais de 6 meses')        s += 1;
+    if (A.tipo_vender && A.tipo_procura && A.tipo_vender === A.tipo_procura) s += 0.5;
+    if (A.capital_divida === 'Mais de 200k')       s -= 1;
+    return Math.max(0, Math.min(10, s));
+  }
+
+  /* ── Normalizar telemóvel → E.164 ──────── */
+  function normalizarTel(v) {
+    let d = (v || '').replace(/\D/g, '');
+    if (!d) return '';
+    if (d.indexOf('00') === 0) d = d.slice(2);
+    if (d.length === 9) d = PREFIXO + d;
+    return '+' + d;
+  }
+
+  /* ── Webhook ────────────────────────────── */
+  function enviarWebhook(tel, first, last, score, eventId) {
+    const payload = {
+      name:              A.nome,
+      first_name:        first,
+      last_name:         last,
+      phone:             tel,
+      email:             A.email,
+      timestamp:         new Date().toISOString(),
+      origem:            NOME_ORIGEM,
+      pagina_url:        window.location.href,
+      event_id:          eventId,
+      score_viabilidade: Number(score.toFixed(1)),
+      procura_tipo:      A.tipo_procura,
+      procura_tipologia: A.tipologia_procura,
+      localizacao:       A.localizacao,
+      vender_tipo:       A.tipo_vender,
+      vender_tipologia:  A.tipologia_atual  || 'N/A',
+      vender_estado:     A.estado_imovel,
+      vender_zona:       A.zona_atual,
+      credito_ativo:     A.credito,
+      capital_divida:    A.capital_divida   || 'N/A',
+      capitais_proprios: A.capitais_proprios,
+      prazo:             A.prazo,
+      motivo:            A.motivo,
+      avaliacao_gratis:  A.avaliacao_gratis,
+      raw:               Object.assign({}, A)
+    };
+    try {
+      fetch(WEBHOOK_URL, {
+        method:    'POST',
+        headers:   { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body:      JSON.stringify(payload),
+        keepalive: true
+      });
+    } catch(e) { console.warn('[PM] Webhook error:', e); }
+  }
+
+  /* ── Finalizar — ordem exacta do BLOCO 3 ── */
+  function finalizar() {
+    if (!validar(5)) return;
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.classList.add('loading');
+
+    const score   = calcularScore();
+    const tel     = normalizarTel(A.tel);
+    const partes  = (A.nome || '').trim().split(/\s+/);
+    const first   = partes[0] || '';
+    const last    = partes.slice(1).join(' ') || '';
+    const eventId = 'lead-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+
+    /* 1) Guardar os dados PRIMEIRO */
+    try { sessionStorage.setItem(CHAVE, JSON.stringify({ A: A, score: score })); } catch(e){}
+
+    /* 2) Advanced Matching antes do evento */
+    if (typeof fbq === 'function') {
+      fbq('init', PIXEL_ID, { em: A.email, ph: tel, fn: first, ln: last });
+    }
+
+    /* 3) Disparar Lead UMA vez com eventID */
+    if (typeof fbq === 'function') {
+      fbq('track', 'Lead', {
+        content_name:     NOME_ORIGEM,
+        content_category: 'Paulo Matos',
+        value:            Number(score.toFixed(1)),
+        currency:         'EUR'
+      }, { eventID: eventId });
+    }
+
+    /* 4) Enviar lead ao GoHighLevel (keepalive sobrevive ao redirect) */
+    enviarWebhook(tel, first, last, score, eventId);
+
+    /* 5) Redirecionar SÓ após 800ms — sem este delay o window.location
+          cancela o beacon do pixel antes de este chegar ao Meta */
+    let jaFoi = false;
+    const ir  = () => { if (jaFoi) return; jaFoi = true; window.location.href = 'resultado.html'; };
+    setTimeout(ir, 800);
+  }
+</script>
+
+</body>
+</html>
